@@ -18,7 +18,7 @@ storage_client = storage.Client()
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
 
 # Load processed data from Cloud Storage
-bucket = storage_client.bucket(cfg.BUCKET_NAME.replace("gs://", ""))
+bucket = storage_client.bucket(cfg.BUCKET_NAME.replace("gs://", ""))  # ✅ Ensure correct bucket reference
 blob = bucket.blob("processed_data/nyc_taxi_data.csv")
 
 try:
@@ -58,15 +58,15 @@ with open(model_filename, "wb") as f:
     pickle.dump(model, f)
 
 # Upload model to Cloud Storage
-model_blob = bucket.blob(f"models/{model_filename}")
+model_dir = f"models/"
+model_blob = bucket.blob(f"{model_dir}{model_filename}")
 model_blob.upload_from_filename(model_filename)
-print(f"✅ Model saved to: gs://{cfg.BUCKET_NAME}/models/{model_filename}")
-
+print(f"✅ Model saved to: gs://{cfg.BUCKET_NAME}/{model_dir}{model_filename}")
 
 # Upload model to Vertex AI Model Registry
 model_artifact = aiplatform.Model.upload(
     display_name=cfg.MODEL_NAME,
-    artifact_uri=f"gs://{cfg.BUCKET_NAME}/models/{model_filename}",
+    artifact_uri=f"{cfg.BUCKET_NAME}/{model_dir}",  # ✅ Use folder, not file
     serving_container_image_uri="us-docker.pkg.dev/vertex-ai/prediction/sklearn-cpu.1-0:latest",
 )
 
