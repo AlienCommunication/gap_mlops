@@ -13,25 +13,31 @@ from sklearn.metrics import mean_absolute_error
 from config import settings as cfg
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 
-
 # Set up GCP clients
 storage_client = storage.Client()
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
 
 # Load processed data from Cloud Storage
-bucket = storage_client.bucket(cfg.BUCKET_NAME.replace("gs://", ""))  # ✅ Ensure correct bucket reference
+bucket = storage_client.bucket(cfg.BUCKET_NAME.replace("gs://", ""))
 blob = bucket.blob("processed_data/nyc_taxi_data.csv")
 
 try:
-    csv_data = blob.download_as_text()  # ✅ Fix download method
-    df = pd.read_csv(io.StringIO(csv_data))  # ✅ Read CSV correctly
+    csv_data = blob.download_as_text()
+    df = pd.read_csv(io.StringIO(csv_data))
     print("✅ Successfully loaded preprocessed NYC taxi data from Cloud Storage.")
 except Exception as e:
     print("❌ Failed to load file from Cloud Storage. Ensure preprocessing runs first.")
     raise e
 
+# Convert datetime columns to proper format
+df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
+df["dropoff_datetime"] = pd.to_datetime(df["dropoff_datetime"])
+
+# Compute trip duration in minutes (New Feature)
+df["trip_duration"] = (df["dropoff_datetime"] - df["pickup_datetime"]).dt.total_seconds() / 60
+
 # Define features & target
-X = df.drop(columns=["fare_amount"])  # ✅ NYC Taxi dataset uses 'fare_amount' as target
+X = df.drop(columns=["fare_amount", "pickup_datetime", "dropoff_datetime"])  # ✅ Remove datetime columns
 y = df["fare_amount"]
 
 # Split data
