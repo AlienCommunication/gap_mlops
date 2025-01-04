@@ -1,0 +1,9 @@
+google-cloud-aiplatform
+google-cloud-bigquery
+google-cloud-storage
+pandas
+numpy
+scikit-learn
+matplotlib
+google-cloud-pipeline-components
+kfp
