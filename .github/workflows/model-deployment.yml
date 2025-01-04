@@ -1,0 +1,36 @@
+name: Model Deployment
+
+on:
+  push:
+    paths:
+      - "src/deploy_model.py"
+  workflow_run:
+    workflows: ["Model Training"]
+    types:
+      - completed
+
+jobs:
+  deploy_model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate with GCP
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" > gcp-key.json
+          gcloud auth activate-service-account --key-file=gcp-key.json
+          gcloud config set project classdemo-425210
+
+      - name: Run Model Deployment
+        run: python src/deploy_model.py
