@@ -24,7 +24,7 @@ blob = bucket.blob("processed_data/nyc_taxi_data.csv")
 
 try:
     csv_data = blob.download_as_text()  # ✅ Fix download method
-    df = pd.read_csv(pd.compat.StringIO(csv_data))  # ✅ Read CSV correctly
+    df = pd.read_csv(io.StringIO(csv_data))  # ✅ Read CSV correctly
     print("✅ Successfully loaded preprocessed NYC taxi data from Cloud Storage.")
 except Exception as e:
     print("❌ Failed to load file from Cloud Storage. Ensure preprocessing runs first.")
