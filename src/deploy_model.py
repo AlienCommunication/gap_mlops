@@ -10,6 +10,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 # Initialize Vertex AI
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
 
+
 # Load latest model from Vertex AI Model Registry
 models = aiplatform.Model.list(filter=f"display_name={cfg.MODEL_NAME}", order_by="update_time desc")
 if not models:
