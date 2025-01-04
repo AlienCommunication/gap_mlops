@@ -12,21 +12,26 @@ from sklearn.metrics import mean_absolute_error
 from config import settings as cfg
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 
+
 # Set up GCP clients
 storage_client = storage.Client()
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
 
 # Load processed data from Cloud Storage
-bucket = storage_client.bucket(cfg.BUCKET_NAME)
-blob = bucket.blob("processed_data/nyc_taxi_data.csv")  # ✅ Updated filename
-df = pd.read_csv(blob.download_as_text())
+bucket = storage_client.bucket(cfg.BUCKET_NAME.replace("gs://", ""))  # ✅ Ensure correct bucket reference
+blob = bucket.blob("processed_data/nyc_taxi_data.csv")
 
-# Print column names for debugging
-print("✅ Columns in dataset:", df.columns)
+try:
+    csv_data = blob.download_as_text()  # ✅ Fix download method
+    df = pd.read_csv(pd.compat.StringIO(csv_data))  # ✅ Read CSV correctly
+    print("✅ Successfully loaded preprocessed NYC taxi data from Cloud Storage.")
+except Exception as e:
+    print("❌ Failed to load file from Cloud Storage. Ensure preprocessing runs first.")
+    raise e
 
-# Define features & target (Updating target column from 'median_house_value' to 'fare_amount')
+# Define features & target
 X = df.drop(columns=["fare_amount"])  # ✅ NYC Taxi dataset uses 'fare_amount' as target
-y = df["fare_amount"]  # ✅ Target variable for regression
+y = df["fare_amount"]
 
 # Split data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -41,7 +46,7 @@ mae = mean_absolute_error(y_test, y_pred)
 print(f"✅ Model Mean Absolute Error: {mae}")
 
 # Save model locally
-model_filename = "random_forest_nyc_taxi.pkl"  # ✅ Updated filename
+model_filename = "random_forest_nyc_taxi.pkl"
 with open(model_filename, "wb") as f:
     pickle.dump(model, f)
 
