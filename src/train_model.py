@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import io
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from google.cloud import storage, aiplatform
 from sklearn.model_selection import train_test_split
