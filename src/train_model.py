@@ -52,9 +52,9 @@ y_pred = model.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 print(f"✅ Model Mean Absolute Error: {mae}")
 
-# Save model locally as model.pkl (REQUIRED by Vertex AI)
+# Save model locally as model.joblib (REQUIRED by Vertex AI)
 model_dir = "models/"
-model_filename = "model.pkl"  # ✅ Change to "model.pkl"
+model_filename = "model.joblib"  # ✅ Change to "model.joblib"
 local_model_path = os.path.join(model_dir, model_filename)
 
 os.makedirs(model_dir, exist_ok=True)
