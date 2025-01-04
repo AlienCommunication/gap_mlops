@@ -1,0 +1,33 @@
+name: Data Preprocessing
+on:
+  push:
+    paths:
+      - "src/data_preprocessing.py"
+  schedule:
+    - cron: '0 2 * * *'  # Runs every day at 2 AM UTC
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate with GCP
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" > gcp-key.json
+          gcloud auth activate-service-account --key-file=gcp-key.json
+          gcloud config set project classdemo-425210
+
+      - name: Run Data Preprocessing
+        run: python src/data_preprocessing.py
