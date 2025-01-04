@@ -11,7 +11,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 client = bigquery.Client()
 
 # SQL Query to load data
-query = f"""
+query = query = f"""
     SELECT longitude, latitude, housing_median_age, total_rooms, 
            total_bedrooms, population, households, median_income, 
            median_house_value 
