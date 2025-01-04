@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from google.cloud import storage
 from config import settings as cfg
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 
 # Initialize BigQuery client
 client = bigquery.Client()

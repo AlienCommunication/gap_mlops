@@ -41,6 +41,7 @@ jobs:
           echo "$GCP_SA_KEY" > gcp-key.json
           gcloud auth activate-service-account --key-file=gcp-key.json
           gcloud config set project classdemo-425210
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp-key.json
 
       - name: Run Data Preprocessing
         run: python src/data_preprocessing.py
