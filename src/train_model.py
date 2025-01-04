@@ -62,6 +62,7 @@ model_blob = bucket.blob(f"models/{model_filename}")
 model_blob.upload_from_filename(model_filename)
 print(f"✅ Model saved to: gs://{cfg.BUCKET_NAME}/models/{model_filename}")
 
+
 # Upload model to Vertex AI Model Registry
 model_artifact = aiplatform.Model.upload(
     display_name=cfg.MODEL_NAME,
