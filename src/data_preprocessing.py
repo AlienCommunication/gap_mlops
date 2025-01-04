@@ -1,7 +1,7 @@
 from google.cloud import bigquery
 import pandas as pd
 from google.cloud import storage
-from gap_mlops.config import settings as cfg
+from config import settings as cfg
 
 # Initialize BigQuery client
 client = bigquery.Client()
