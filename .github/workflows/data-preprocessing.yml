@@ -20,8 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Install dependencies
-        run: pip install google-cloud-bigquery
+
+      - name: Install Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: "latest"
+
       - name: Authenticate with GCP
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
