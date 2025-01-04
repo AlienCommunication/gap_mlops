@@ -10,12 +10,12 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 # Initialize BigQuery client
 client = bigquery.Client()
 
-# SQL Query to load data
-query = query = f"""
-    SELECT longitude, latitude, housing_median_age, total_rooms, 
-           total_bedrooms, population, households, median_income, 
-           median_house_value 
-    FROM `{cfg.BQ_DATASET}.{cfg.BQ_TABLE}`
+query = """
+    SELECT 
+        pickup_datetime, dropoff_datetime, trip_distance, fare_amount, passenger_count 
+    FROM `bigquery-public-data.new_york_taxi_trips.tlc_yellow_trips_2022`
+    WHERE trip_distance > 0 AND fare_amount > 0
+    LIMIT 5000
 """
 
 # Load data
