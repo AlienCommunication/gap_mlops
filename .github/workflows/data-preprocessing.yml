@@ -5,7 +5,7 @@ on:
     branches:
       - main  # Runs on push to the main branch
     paths:
-      - "src/data_preprocessing.py"
+      - PYTHONPATH=$(pwd) python src/data_preprocessing.py
   pull_request:
     branches:
       - main  # Runs on PRs to the main branch
@@ -13,7 +13,7 @@ on:
     - cron: '0 2 * * *'  # Runs daily at 2 AM UTC
   workflow_dispatch:  # Allows manual execution from GitHub UI
 
-  
+
 jobs:
   preprocess:
     runs-on: ubuntu-latest
