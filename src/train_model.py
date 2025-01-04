@@ -13,7 +13,6 @@ from sklearn.metrics import mean_absolute_error
 from config import settings as cfg
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 
-
 # Set up GCP clients
 storage_client = storage.Client()
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
@@ -53,25 +52,28 @@ y_pred = model.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 print(f"✅ Model Mean Absolute Error: {mae}")
 
-# Save model locally
-model_filename = "random_forest_nyc_taxi.pkl"
-with open(model_filename, "wb") as f:
+# Save model locally as model.pkl (REQUIRED by Vertex AI)
+model_dir = "models/"
+model_filename = "model.pkl"  # ✅ Change to "model.pkl"
+local_model_path = os.path.join(model_dir, model_filename)
+
+os.makedirs(model_dir, exist_ok=True)
+with open(local_model_path, "wb") as f:
     pickle.dump(model, f)
 
 # Ensure models directory exists in Cloud Storage
-model_dir = f"models/"
 placeholder_blob = bucket.blob(f"{model_dir}placeholder.txt")
 placeholder_blob.upload_from_string("This is a placeholder file to ensure the directory exists.")
 
 # Upload model to Cloud Storage
 model_blob = bucket.blob(f"{model_dir}{model_filename}")
-model_blob.upload_from_filename(model_filename)
+model_blob.upload_from_filename(local_model_path)
 print(f"✅ Model saved to: gs://{cfg.BUCKET_NAME}/{model_dir}{model_filename}")
 
 # Upload model to Vertex AI Model Registry
 model_artifact = aiplatform.Model.upload(
     display_name=cfg.MODEL_NAME,
-    artifact_uri=f"gs://{cfg.BUCKET_NAME}/{model_dir}",  # ✅ Ensure full gs:// path
+    artifact_uri=f"gs://{cfg.BUCKET_NAME}/{model_dir}",  # ✅ Ensure directory
     serving_container_image_uri="us-docker.pkg.dev/vertex-ai/prediction/sklearn-cpu.1-0:latest",
 )
 
