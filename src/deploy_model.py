@@ -1,6 +1,11 @@
 import time
 from google.cloud import aiplatform
-import config.settings as cfg
+import os
+import sys
+import io
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import settings as cfg
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("gcp-key.json")
 
 # Initialize Vertex AI
 aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
